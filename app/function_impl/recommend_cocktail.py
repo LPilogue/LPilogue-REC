@@ -53,7 +53,7 @@ def recommend_cocktail(emotions):
                 cocktail_id=color[1]
 
         # 추천 칵테일 정보 가져오기
-        cursor.execute("SELECT * FROM CocktailData WHERE cocktailDataId=%s", (cocktail_id,))
+        cursor.execute("SELECT name, filePath, ingredients, description FROM CocktailData WHERE cocktailDataId=%s", (cocktail_id,))
         cocktail = cursor.fetchone()
         return cocktail
 

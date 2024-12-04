@@ -21,7 +21,7 @@ def recomhmend(sentence):
 
 if __name__ == "__main__":
     # app.run(host="localhost", port=5000)
-    # insert_cocktail()
+    insert_cocktail()
     emotions=[('불안', 0.9832584857940674), ('당황', 0.005890038330107927), ('분노', 0.0058568562380969524)]
     print(recommend_cocktail(emotions))
 

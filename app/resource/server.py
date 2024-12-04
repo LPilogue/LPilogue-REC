@@ -17,4 +17,4 @@ def get_db_connection(db_config):
     )
 
 
-file_server_url="C:/Users/wlswn/spring study/cocktail_image"
+file_server_url="https://lpilogue-cocktail.s3.us-east-2.amazonaws.com/"
