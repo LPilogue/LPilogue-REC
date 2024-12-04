@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 import pandas as pd
 import os
 
-from app.resource.server import file_server_url
+from app.resource.server import file_server_url, get_db_connection, DB_CONFIG
 
 
 def insert_cocktail():
@@ -11,13 +11,7 @@ def insert_cocktail():
     df = pd.read_csv(file_path)
     print(df.head())
     # 데이터베이스 연결 설정
-    db_config = {
-        'host': 'localhost',
-        'port': 3306,
-        'user': 'root',
-        'password': '2501',
-        'database': 'lpilogue'
-    }
+    db_config=DB_CONFIG
     # SQLAlchemy 엔진 생성
     engine = create_engine(
         f"mysql+pymysql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}")
@@ -27,12 +21,7 @@ def insert_cocktail():
     print("Data inserted successfully.")
     # 파일 경로 업데이트
 
-    connection = pymysql.connect(
-        host='localhost',
-        user='root',
-        password='2501',
-        database='lpilogue'
-    )
+    connection=get_db_connection(db_config)
     with connection.cursor() as cursor:
             # 칵테일 이름 가져오기
             cursor.execute("SELECT cocktailDataId, name FROM CocktailData")

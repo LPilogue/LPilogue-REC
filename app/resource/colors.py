@@ -8,23 +8,16 @@ JOY = "#FFD700"       # Golden yellow
 
 # Dictionary for easy access to all emotion colors
 EMOTION_COLORS = {
-    "anger": ANGER,
-    "sadness": SADNESS,
-    "anxiety": ANXIETY,
-    "hurt": HURT,
-    "embarrassment": EMBARRASSMENT,
-    "joy": JOY
+    '불안': 'ANXIETY',
+    '당황': 'EMBARRASSMENT',
+    '분노': 'ANGER',
+    '슬픔': 'SADNESS',
+    '상처': 'HURT',
+    '기쁨': 'JOY'
 }
 
 # Get color by emotion name
-def get_color(emotion: str) -> str:
-    """
-    Returns the color code for a given emotion.
+def get_color(emotion):
 
-    Args:
-        emotion (str): The name of the emotion (case-insensitive)
-
-    Returns:
-        str: The hex color code for the emotion
-    """
-    return EMOTION_COLORS.get(emotion.lower())
+    emotion_key = EMOTION_COLORS.get(emotion)
+    return globals().get(emotion_key)
