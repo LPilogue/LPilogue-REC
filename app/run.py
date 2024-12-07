@@ -15,10 +15,10 @@ app = Flask(__name__)
 def hello():
     return "Server is running!"
 
-@app.route("/recommend/<sentence>")
-def recomhmend(sentence):
+@app.route("/recommend/<content>")
+def recommend(content):
     # 감정 예측
-    emotions = predict_emotions(sentence)
+    emotions = predict_emotions(content)
     # 칵테일 추천
     cocktail = recommend_cocktail(emotions)
     cocktail_json = jsonify(cocktail)
