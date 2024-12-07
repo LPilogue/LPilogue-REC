@@ -70,7 +70,7 @@ class EmotionMusicMapper:
 
             if feature == 'mode':
                 # mode는 binary로 처리 (major/minor)
-                result[feature] = 'major' if similarity > 0.5 else 'minor'
+                result[feature] = 1 if similarity > 0.5 else 0
             else:
                 # 유사도를 해당 특성의 범위로 스케일링
                 scaled_value = (similarity * (max_val - min_val)) + min_val
