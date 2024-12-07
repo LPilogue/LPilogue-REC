@@ -21,19 +21,21 @@ def recommend(content):
     emotions = predict_emotions(content)
     # 칵테일 추천
     cocktail = recommend_cocktail(emotions)
-    cocktail_json = jsonify(cocktail)
+
     # 노래 추천
     mapper = EmotionMusicMapper()
     song_features = mapper.process_emotion_data(emotions)
     songs = recommend_songs(song_features)
-    songs_json = jsonify(songs)
-    return songs_json
+
+    response = {"cocktail": cocktail, "songs": songs}
+
+    return jsonify(response)
 
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5000)
     # insert_cocktail()
-    # get_access_token()
+
 
 
 

@@ -48,22 +48,12 @@ def search_song(song_title, artist_name):
 
         song_info = {
             "name": track["name"],
-            "artist": ", ".join(artist["name"] for artist in track["artists"]),
-            "filePath": track["album"]["images"][0]["url"]
+            "type": "RECOMMENDED",
+            "isLiked": 0,
+            "filePath": track["album"]["images"][0]["url"],
+            "artist": ", ".join(artist["name"] for artist in track["artists"])
         }
         return song_info
     else:
         return "Song not found."
 
-# Example usage
-song_title = "Shape of You"
-artist_name = "Ed Sheeran"
-
-song_info = search_song(song_title, artist_name)
-if isinstance(song_info, dict):
-    print(f"Title: {song_info['name']}")
-    print(f"Artist: {song_info['artist']}")
-    print(f"Album image: {song_info['filePath']}")
-
-else:
-    print(song_info)
