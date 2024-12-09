@@ -28,7 +28,7 @@ def recommend_songs(input_features):
 
         recommendations = []
         for i in indices[0]:
-            song = search_song(loaded_df.iloc[i]['song'], loaded_df.iloc[i]['artist'])
+            song = search_song(loaded_df.iloc[i]['title'], loaded_df.iloc[i]['artist'])
             recommendations.append(song)
         return recommendations
     except FileNotFoundError:

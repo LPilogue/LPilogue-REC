@@ -1,3 +1,5 @@
+import pprint
+
 from flask import Flask, jsonify
 
 from app.function_impl.insert_cocktailData import insert_cocktail
@@ -19,6 +21,7 @@ def hello():
 def recommend(content):
     # 감정 예측
     emotions = predict_emotions(content)
+    pprint.pprint(emotions)
     # 칵테일 추천
     cocktail = recommend_cocktail(emotions)
 
