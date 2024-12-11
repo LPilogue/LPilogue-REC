@@ -24,14 +24,14 @@ class EmotionMusicMapper:
 
         # 각 특성의 범위
         self.feature_ranges = {
-            'popularity': (0, 100),
-            'danceability': (0, 1),
-            'energy': (0, 1),
+            'popularity': (35, 100),
+            'danceability': (0, 100),
+            'energy': (0, 100),
             'loudness': (-21, 0),
-            'speechiness': (0, 1),
-            'acousticness': (0, 1),
-            'liveness': (0, 1),
-            'valence': (0, 1),
+            'speechiness': (0, 55),
+            'acousticness': (0, 100),
+            'liveness': (0, 100),
+            'valence': (0, 100),
             'tempo': (60, 211)
         }
 

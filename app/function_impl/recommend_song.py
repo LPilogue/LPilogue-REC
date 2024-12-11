@@ -1,9 +1,12 @@
 import pickle
+import pprint
+
 import pandas as pd
+import requests
 import spotipy
 from spotipy import SpotifyClientCredentials
 
-from app.resource.server import Client_id, Client_secret
+from app.resource.server import Client_id, Client_secret, youtube_api
 
 
 def recommend_songs(input_features):
@@ -43,6 +46,7 @@ def search_song(song_title, artist_name):
     query = f"track:{song_title} artist:{artist_name}"
     results = sp.search(q=query, type="track", limit=1)
 
+
     if results['tracks']['items']:
         track = results['tracks']['items'][0]
 
@@ -51,9 +55,18 @@ def search_song(song_title, artist_name):
             "type": "RECOMMENDED",
             "isLiked": 0,
             "filePath": track["album"]["images"][0]["url"],
-            "artist": ", ".join(artist["name"] for artist in track["artists"])
+            "artist": ", ".join(artist["name"] for artist in track["artists"]),
+            "songURI": get_youtube_url(song_title, artist_name)
         }
         return song_info
     else:
         return "Song not found."
+
+
+def get_youtube_url(song_title, artist_name):
+        request_url=f"https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q={song_title}+{artist_name}&key={youtube_api}"
+        response=requests.get(request_url)
+        response_json=response.json()
+        video_id=response_json['items'][0]['id']['videoId']
+        return f"https://www.youtube.com/embed/{video_id}"
 
