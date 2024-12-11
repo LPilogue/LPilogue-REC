@@ -1,8 +1,12 @@
-from flask import Flask
+import pprint
+
+from flask import Flask, jsonify
 
 from app.function_impl.insert_cocktailData import insert_cocktail
 from app.function_impl.predict_emotions import predict_emotions
 from app.function_impl.recommend_cocktail import recommend_cocktail
+from app.function_impl.recommend_song import recommend_songs
+from app.model.emotion_music_mapper import EmotionMusicMapper
 
 app = Flask(__name__)
 
@@ -13,17 +17,30 @@ app = Flask(__name__)
 def hello():
     return "Server is running!"
 
-@app.route("/recommend/<sentence>")
-def recomhmend(sentence):
-    emotions = predict_emotions(sentence)
-    recommend_cocktail(emotions)
+@app.route("/recommend/<content>")
+def recommend(content):
+    # 감정 예측
+    emotions = predict_emotions(content)
+    pprint.pprint(emotions)
+    # 칵테일 추천
+    cocktail = recommend_cocktail(emotions)
+
+    # 노래 추천
+    mapper = EmotionMusicMapper()
+    song_features = mapper.process_emotion_data(emotions)
+    songs = recommend_songs(song_features)
+
+    response = {"cocktail": cocktail, "songs": songs}
+
+    return jsonify(response)
 
 
 if __name__ == "__main__":
-    # app.run(host="localhost", port=5000)
-    insert_cocktail()
-    emotions=[('불안', 0.9832584857940674), ('당황', 0.005890038330107927), ('분노', 0.0058568562380969524)]
-    print(recommend_cocktail(emotions))
+    app.run(host="localhost", port=5000)
+    # insert_cocktail()
+
+
+
 
 
 
