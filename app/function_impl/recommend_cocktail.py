@@ -59,7 +59,6 @@ def recommend_cocktail(emotions):
         cocktail_info={
             "name": cocktail[0],
             "filePath": cocktail[1],
-            "ingredients": cocktail[2],
             "description": cocktail[3]
         }
         return cocktail_info
