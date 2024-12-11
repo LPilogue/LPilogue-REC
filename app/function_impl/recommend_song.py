@@ -68,5 +68,5 @@ def get_youtube_url(song_title, artist_name):
         response=requests.get(request_url)
         response_json=response.json()
         video_id=response_json['items'][0]['id']['videoId']
-        return f"https://www.youtube.com/embed/{video_id}"
+        return f"https://www.youtube.com/watch?v={video_id}"
 
