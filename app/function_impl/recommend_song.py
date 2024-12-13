@@ -9,7 +9,7 @@ from spotipy import SpotifyClientCredentials
 from app.resource.server import Client_id, Client_secret, youtube_api
 
 
-def recommend_songs(input_features):
+def recommend_songs(input_features, badSongList):
     """
     Gets the top 5 recommendations using the KNN model.
     """
@@ -29,9 +29,16 @@ def recommend_songs(input_features):
         # Get the recommendations
         distances, indices = loaded_model.kneighbors([input_features])
 
+        bad_song_set={(song['name'],song['artist']) for song in badSongList}
         recommendations = []
         for i in indices[0]:
-            song = search_song(loaded_df.iloc[i]['title'], loaded_df.iloc[i]['artist'])
+            if len(recommendations)==5:
+                break
+            title=loaded_df.iloc[i]['title']
+            artist=loaded_df.iloc[i]['artist']
+            if (title,artist) in bad_song_set:
+                continue
+            song = search_song(title, artist)
             recommendations.append(song)
         return recommendations
     except FileNotFoundError:

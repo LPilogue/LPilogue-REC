@@ -18,13 +18,15 @@ def hello():
     return "Server is running!"
 
 @app.route("/recommend", methods=["POST"])
-def recommend(content):
+def recommend():
 
     data = request.get_json()
     if data is None:
         return jsonify({"error": "No data provided."}), 400
 
     content=data['content']
+    badSongList=data['badSongList']
+
     # 감정 예측
     emotions = predict_emotions(content)
     pprint.pprint(emotions)
@@ -34,7 +36,7 @@ def recommend(content):
     # 노래 추천
     mapper = EmotionMusicMapper()
     song_features = mapper.process_emotion_data(emotions)
-    songs = recommend_songs(song_features)
+    songs = recommend_songs(song_features, badSongList)
 
     response = {"cocktail": cocktail, "songs": songs}
 
