@@ -1,6 +1,6 @@
 import pprint
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 from app.function_impl.insert_cocktailData import insert_cocktail
 from app.function_impl.predict_emotions import predict_emotions
@@ -17,8 +17,14 @@ app = Flask(__name__)
 def hello():
     return "Server is running!"
 
-@app.route("/recommend/<content>")
+@app.route("/recommend", methods=["POST"])
 def recommend(content):
+
+    data = request.get_json()
+    if data is None:
+        return jsonify({"error": "No data provided."}), 400
+
+    content=data['content']
     # 감정 예측
     emotions = predict_emotions(content)
     pprint.pprint(emotions)
