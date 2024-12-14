@@ -1,4 +1,4 @@
-from app.resource.colors import get_color, EMOTION_COLORS
+from app.resource.colors import get_color
 from app.resource.server import DB_CONFIG, get_db_connection
 
 

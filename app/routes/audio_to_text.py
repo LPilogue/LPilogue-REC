@@ -1,13 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 import sounddevice as sd
 import numpy as np
 from transformers import pipeline
 import tempfile
 from scipy.io.wavfile import write
 import threading  
+import ffmpeg
 
 # Flask 애플리케이션 초기화
-app = Flask(__name__)
+
+audio_bp=Blueprint("audio", __name__)
 
 # Whisper 모델 로드
 whisperPipe = pipeline(
@@ -36,14 +38,13 @@ def record_audio_thread(sample_rate=16000):
         audio_data.append(frame)
     print("Recording stopped.")
     recorded_audio = np.concatenate(audio_data)
-    
+
     
     """
     무음 구간으로 종료 조건을 걸까 생각해 봤는데 생각이 길어질 뿐 녹음을 종료하고 싶지 않은 경우가 있을 수 있을 것 같아 
     특정 버튼을 누르면 녹음 시작하고, 또 다른 버튼을 누르면 녹음을 종료할 수 있도록 했습니다
     """
-@app.route('/start_recording', methods=['POST'])   
-
+@audio_bp.route('/start_recording', methods=['POST'])
 def start_recording():
     """
     녹음 시작
@@ -57,7 +58,7 @@ def start_recording():
     recording_thread.start()
     return jsonify({"status": "success", "message": "Recording started."})
 
-@app.route('/stop_recording', methods=['POST'])
+@audio_bp.route('/stop_recording', methods=['POST'])
 def stop_recording():
     """
     녹음 중단 & 텍스트 변환
@@ -86,6 +87,4 @@ def stop_recording():
         print(f"Error during transcription: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
-if __name__ == "__main__":
-    print("Starting Flask server...")
-    app.run(host="0.0.0.0", port=5003)  # Flask 서버 실행
+

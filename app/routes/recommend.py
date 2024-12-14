@@ -1,23 +1,19 @@
 import pprint
 
-from flask import Flask, jsonify, request
+from flask import jsonify, request, Blueprint
 
-from app.function_impl.insert_cocktailData import insert_cocktail
 from app.function_impl.predict_emotions import predict_emotions
 from app.function_impl.recommend_cocktail import recommend_cocktail
 from app.function_impl.recommend_song import recommend_songs
 from app.model.emotion_music_mapper import EmotionMusicMapper
 
-app = Flask(__name__)
+recommend_bp=Blueprint("recommend", __name__)
 
-
-
-
-@app.route("/")
+@recommend_bp.route("/", methods=["GET"])
 def hello():
     return "Server is running!"
 
-@app.route("/recommend", methods=["POST"])
+@recommend_bp.route("/recommend", methods=["POST"])
 def recommend():
 
     data = request.get_json()
@@ -41,16 +37,3 @@ def recommend():
     response = {"cocktail": cocktail, "songs": songs}
 
     return jsonify(response)
-
-
-
-if __name__ == "__main__":
-    app.run(host="localhost", port=5000)
-    # insert_cocktail()
-
-
-
-
-
-
-
