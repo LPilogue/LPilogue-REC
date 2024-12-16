@@ -20,8 +20,8 @@ generation_config = {
 model = genai.GenerativeModel('gemini-pro',
                              generation_config=generation_config)
 
-@app.route('/generate', methods=['POST'])
-def generate_response():
+@app.route('/chatbot', methods=['POST'])
+def chatbot_response():
     # JSON 데이터에서 입력 받아오기
     data = request.get_json()
     content = data.get('content', '')
