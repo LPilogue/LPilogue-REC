@@ -30,6 +30,7 @@ def recommend():
     cocktail = recommend_cocktail(emotions)
 
     # 노래 추천
+
     mapper = EmotionMusicMapper()
     song_features = mapper.process_emotion_data(emotions)
     songs = recommend_songs(song_features, badSongList)

@@ -2,7 +2,7 @@ import pymysql
 
 # 데이터베이스 연결 설정
 DB_CONFIG = {
-    'host': '%',
+    'host': 'localhost',
     'port': 3306,
     'user': 'root',
     'password': '2501',

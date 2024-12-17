@@ -1,11 +1,14 @@
 import pickle
 
+import numpy as np
 import pandas as pd
 import requests
 import spotipy
+from sklearn.feature_extraction.text import TfidfVectorizer
 from spotipy import SpotifyClientCredentials
 
 from app.resource.server import Client_id, Client_secret, youtube_api
+
 
 
 def recommend_songs(input_features, badSongList):
@@ -14,13 +17,15 @@ def recommend_songs(input_features, badSongList):
     """
     try:
         # Load the model and DataFrame information
-        loaded_data = pickle.load(open('../model_resource/knn_model_with_data.pkl', 'rb'))
+        loaded_data = pickle.load(open('model_resource/knn_model_with_data.pkl', 'rb'))
         loaded_model = loaded_data['model']
         columns = loaded_data['dataframe_columns']
         data = loaded_data['dataframe_data']
 
         # Recreate the DataFrame from the stored information
         loaded_df = pd.DataFrame(data, columns=columns)
+
+
 
         # input_features에서 value만 추출
         input_features = [value for _, value in input_features.items()]
@@ -33,8 +38,8 @@ def recommend_songs(input_features, badSongList):
         for i in indices[0]:
             if len(recommendations)==5:
                 break
-            title=loaded_df.iloc[i]['title']
-            artist=loaded_df.iloc[i]['artist']
+            title=loaded_df.iloc[i]['track_name']
+            artist=loaded_df.iloc[i]['track_artist']
             if (title,artist) in bad_song_set:
                 continue
             song = search_song(title, artist)
@@ -75,4 +80,3 @@ def get_youtube_url(song_title, artist_name):
         response_json=response.json()
         video_id=response_json['items'][0]['id']['videoId']
         return f"https://www.youtube.com/watch?v={video_id}"
-
