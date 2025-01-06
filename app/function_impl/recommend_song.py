@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import requests
 import spotipy
+from scipy.spatial.distance import cosine
 from sklearn.feature_extraction.text import TfidfVectorizer
 from spotipy import SpotifyClientCredentials
 
@@ -33,6 +34,7 @@ def recommend_songs(input_features, badSongList):
         # Get the recommendations
         distances, indices = loaded_model.kneighbors([input_features])
 
+
         bad_song_set={(song['name'],song['artist']) for song in badSongList}
         recommendations = []
         for i in indices[0]:
@@ -44,11 +46,21 @@ def recommend_songs(input_features, badSongList):
                 continue
             song = search_song(title, artist)
             recommendations.append(song)
+
+        mean_similarity = calculate_mean_similarity(input_features, indices[0], loaded_df)
+        print(f"Mean similarity: {mean_similarity}")
         return recommendations
     except FileNotFoundError:
         print("Error: knn_model_with_data.pkl not found. Please run the KNN training code first.")
         return []
 
+def calculate_mean_similarity(input_features, indices, df):
+    similarities = []
+    for i in indices:
+        recommended_features = df.iloc[i].drop(['track_name', 'track_artist', 'lyrics']).values
+        similarity = 1 - cosine(input_features, recommended_features)
+        similarities.append(similarity)
+    return np.mean(similarities)
 
 def search_song(song_title, artist_name):
     # Set up Spotipy client

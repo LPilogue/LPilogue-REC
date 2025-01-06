@@ -2,6 +2,7 @@ import pprint
 
 from flask import jsonify, request, Blueprint
 
+from app.function_impl.insert_cocktailData import insert_cocktail
 from app.function_impl.predict_emotions import predict_emotions
 from app.function_impl.recommend_cocktail import recommend_cocktail
 from app.function_impl.recommend_song import recommend_songs
@@ -11,6 +12,7 @@ recommend_bp=Blueprint("recommend", __name__)
 
 @recommend_bp.route("/", methods=["GET"])
 def hello():
+    insert_cocktail()
     return "Server is running!"
 
 @recommend_bp.route("/recommend", methods=["POST"])

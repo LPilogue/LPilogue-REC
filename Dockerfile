@@ -14,7 +14,7 @@
 #
 #COPY . .
 #
-#CMD [ "python", "run.py" ]
+#CMD [ "python", "app.py" ]
 
 # 빌드 스테이지
 FROM python:3.11-slim as builder
@@ -54,4 +54,4 @@ ENV PATH="/opt/venv/bin:$PATH"
 # 애플리케이션 파일 복사
 COPY . .
 
-CMD ["python", "run.py"]
+CMD ["python", "app.py"]
