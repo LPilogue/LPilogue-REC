@@ -12,7 +12,6 @@ recommend_bp=Blueprint("recommend", __name__)
 
 @recommend_bp.route("/", methods=["GET"])
 def hello():
-    insert_cocktail()
     return "Server is running!"
 
 @recommend_bp.route("/recommend", methods=["POST"])
