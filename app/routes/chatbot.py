@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 import google.generativeai as genai
 
-# Flask 앱 생성
-app = Flask(__name__)
+from app.resource.server import GOOGLE_API_KEY
 
-# Google Generative AI API 키 설정
-GOOGLE_API_KEY = 'AIzaSyB1uEv2SUkZpuWJkh5l8pzICqPyUhi0K0k'
+
+chatbot_bp=Blueprint("chatbot", __name__)
+
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # 모델 설정
@@ -20,7 +20,7 @@ generation_config = {
 model = genai.GenerativeModel('gemini-pro',
                              generation_config=generation_config)
 
-@app.route('/chatbot', methods=['POST'])
+@chatbot_bp.route('/chatbot', methods=['POST'])
 def chatbot_response():
     # JSON 데이터에서 입력 받아오기
     data = request.get_json()
@@ -53,5 +53,3 @@ def chatbot_response():
         return jsonify({"error": str(e)}), 500
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5004)

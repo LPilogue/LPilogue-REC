@@ -43,4 +43,6 @@ ENV FLASK_DEBUG=0
 EXPOSE 5000
 
 # 애플리케이션 실행
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+#CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+# gunicorn으로 실행
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "120", "--workers", "4", "wsgi:app"]
