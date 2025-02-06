@@ -34,7 +34,10 @@ def recommend():
 
     mapper = EmotionMusicMapper()
     song_features = mapper.process_emotion_data(emotions)
+    pprint.pprint(song_features)
+
     songs = recommend_songs(song_features, badSongList)
+    pprint.pprint(songs)
 
     response = {"cocktail": cocktail, "songs": songs}
 

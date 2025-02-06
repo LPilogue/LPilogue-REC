@@ -26,7 +26,7 @@ def recommend_songs(input_features, badSongList):
         # Recreate the DataFrame from the stored information
         loaded_df = pd.DataFrame(data, columns=columns)
 
-
+        print(loaded_df.head())
 
         # input_features에서 value만 추출
         input_features = [value for _, value in input_features.items()]
