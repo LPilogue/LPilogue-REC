@@ -29,7 +29,7 @@ def recommend():
     pprint.pprint(emotions)
     # 칵테일 추천
     cocktail = recommend_cocktail(emotions)
-
+    pprint.pprint(cocktail)
     # 노래 추천
 
     mapper = EmotionMusicMapper()

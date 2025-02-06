@@ -32,10 +32,16 @@ def recommend_cocktail(emotions):
     emotion_g=round(emotion_g/total_weight)
     emotion_b=round(emotion_b/total_weight)
 
+    print("emotion_r: ", emotion_r, "emotion_g: ", emotion_g, "emotion_b: ", emotion_b)
 
     # DB 연결
     db_config=DB_CONFIG
     connection=get_db_connection(db_config)
+
+    # DB 연결 확인
+    if connection is None:
+        print("DB 연결 실패")
+
     with connection.cursor() as cursor:
         # 각 칵테일의 색상 가져오기
         cursor.execute("SELECT color, cocktailDataId FROM CocktailData")
