@@ -12,6 +12,9 @@ class EmotionMusicMapper:
         # 더 가벼운 모델로 변경
         self.model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2', device='cpu')
 
+        # 먼저 임베딩 차원을 확인
+        test_embedding = self.model.encode("테스트")
+        self.embedding_dim = len(test_embedding)  # 실제 임베딩 차원으로 설정
 
         # 음악 특성에 대한 설명적 단어들 정의
         self.feature_descriptions = {
@@ -55,7 +58,8 @@ class EmotionMusicMapper:
         result = {}
 
         # 전체 감정의 임베딩 계산
-        weighted_emotion_embedding = np.zeros(384)  # SBERT 임베딩 차원
+        weighted_emotion_embedding = np.zeros(self.embedding_dim)
+
         for emotion, weight in emotion_data:
             emotion_embedding = self.model.encode(emotion)
             weighted_emotion_embedding += emotion_embedding * weight
