@@ -26,7 +26,6 @@ def recommend_songs(input_features, badSongList):
         # Recreate the DataFrame from the stored information
         loaded_df = pd.DataFrame(data, columns=columns)
 
-        print(loaded_df.head())
 
         # input_features에서 value만 추출
         input_features = [value for _, value in input_features.items()]
@@ -48,7 +47,7 @@ def recommend_songs(input_features, badSongList):
             recommendations.append(song)
 
         mean_similarity = calculate_mean_similarity(input_features, indices[0], loaded_df)
-        print(f"Mean similarity: {mean_similarity}")
+
         return recommendations
     except FileNotFoundError:
         print("Error: knn_model_with_data.pkl not found. Please run the KNN training code first.")
