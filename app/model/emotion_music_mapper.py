@@ -9,8 +9,9 @@ from scipy.spatial.distance import cosine
 class EmotionMusicMapper:
     def __init__(self):
 
-        # SBERT 모델 로드 (다국어 지원 모델)
-        self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+        # 더 가벼운 모델로 변경
+        self.model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2', device='cpu')
+
 
         # 음악 특성에 대한 설명적 단어들 정의
         self.feature_descriptions = {
