@@ -27,17 +27,22 @@ def recommend():
     # 감정 예측
     emotions = predict_emotions(content)
     pprint.pprint(emotions)
+
     # 칵테일 추천
     cocktail = recommend_cocktail(emotions)
     pprint.pprint(cocktail)
-    # 노래 추천
 
+    # 노래 추천
     mapper = EmotionMusicMapper()
     song_features = mapper.process_emotion_data(emotions)
-    pprint.pprint(song_features)
+
+    if song_features is None:
+        return jsonify({"error": "No song features provided."}), 400
 
     songs = recommend_songs(song_features, badSongList)
-    pprint.pprint(songs)
+
+    if songs is None:
+        return jsonify({"error": "No songs provided."}), 400
 
     response = {"cocktail": cocktail, "songs": songs}
 
