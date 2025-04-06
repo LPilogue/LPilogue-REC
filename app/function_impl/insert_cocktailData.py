@@ -15,7 +15,7 @@ def insert_cocktail():
     engine = create_engine(
         f"mysql+pymysql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}")
     # 테이블로 데이터 삽입
-    table_name = 'CocktailData'
+    table_name = 'Cocktail'
     df.to_sql(table_name, con=engine, if_exists='append', index=False)
     print("Data inserted successfully.")
     # 파일 경로 업데이트
@@ -23,7 +23,7 @@ def insert_cocktail():
     connection=get_db_connection(db_config)
     with connection.cursor() as cursor:
             # 칵테일 이름 가져오기
-            cursor.execute("SELECT cocktailDataId, name FROM CocktailData")
+            cursor.execute("SELECT id, name FROM Cocktail")
             cocktails = cursor.fetchall()  # [(id, name), ...]
 
             # 각 칵테일의 파일 경로 생성 및 업데이트
@@ -32,7 +32,7 @@ def insert_cocktail():
                 file_path = os.path.join(file_server_url, f"{name.replace(' ', '_')}.png")
 
                 # 파일 경로 업데이트
-                update_query = "UPDATE CocktailData SET filePath = %s WHERE cocktailDataId = %s"
+                update_query = "UPDATE Cocktail SET imagePath = %s WHERE id = %s"
                 cursor.execute(update_query, (file_path, cocktail_id))
 
             # 변경사항 커밋
