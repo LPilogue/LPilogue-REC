@@ -26,12 +26,12 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
       # 도커 이미지 빌드하고 도커 허브에 push
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/lpilogue-rec:latest
-            ${{ secrets.DOCKER_USERNAME }}/lpilogue-rec:${{ steps.date.outputs.date }}
+      - name: Build and push the Docker image
+        run: |
+          TAG=$(date +%s)
+          docker build -t $DOCKER_USERNAME/lpilogue-rec:$TAG -t $DOCKER_USERNAME/lpilogue-rec:latest .
+          docker push $DOCKER_USERNAME/lpilogue-rec:$TAG
+          docker push $DOCKER_USERNAME/lpilogue-rec:latest
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
