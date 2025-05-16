@@ -76,7 +76,7 @@ def search_song(song_title, artist_name):
             "name": track["name"],
             "type": "RECOMMENDED",
             "isLiked": 0,
-            "filePath": track["album"]["images"][0]["url"],
+            "imagePath": track["album"]["images"][0]["url"],
             "artist": ", ".join(artist["name"] for artist in track["artists"]),
             "songURI": get_youtube_url(song_title, artist_name)
         }
