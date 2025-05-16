@@ -1,0 +1,63 @@
+services:
+  react-app:
+    container_name: lpilogue-fe
+    restart: on-failure
+    image: hadoroke/lpilogue-fe:latest
+    ports:
+      - "3000:3000"
+    environment:
+      BE_HOST: "lpilogue-be"
+      BE_PORT: "8080"
+      REC_HOST: "lpilogue-rec"
+      REC_PORT: "5000"
+    depends_on:
+      - spring-boot-app
+      - flask-app
+
+  spring-boot-app:
+    container_name: lpilogue-be
+    restart: on-failure
+    image: hadoroke/lpilogue-be:latest
+    ports:
+      - "52781:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: "prod"
+      SPRING_DATASOURCE_URL: jdbc:mysql://lpilogue-db:3306/lpilogue?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+      #      SPRING_DATASOURCE_URL: jdbc:mysql://lpilogue-db.c5msg0qqmmcw.ap-northeast-2.rds.amazonaws.com:3306/lpilogue?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: dnwnswls2501
+      TZ: Asia/Seoul
+    depends_on:
+      - mysql-app
+
+  mysql-app:
+    container_name: lpilogue-db
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_DATABASE: lpilogue
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: dnwnswls2501
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - /mnt/tank/databases/mysql:/var/lib/mysql  # TrueNAS 디스크 마운트 경로
+
+  flask-app:
+    container_name: lpilogue-rec
+    restart: on-failure
+    image: hadoroke/lpilogue-rec:latest
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - "59999:5000"
+    depends_on:
+      - mysql-app
+
+  cloudflare-app:
+    container_name: cloudflare
+    restart: unless-stopped
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token eyJhIjoiM2FhNmJmMjU1NzdmMDQ1OThhMjYyMGEwMzg4OWVkMzYiLCJ0IjoiM2EzNTk5MTItNmZhYi00OGM0LWIxMDktODRhOTFjMzVmN2MwIiwicyI6Ik9UVm1NV1l3TW1RdE9XWTNOQzAwWkdRd0xXRTJZalV0TldSaFpESTBZek01TjJGbSJ9
