@@ -34,6 +34,4 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/lpilogue-rec:latest
             ${{ secrets.DOCKER_USERNAME }}/lpilogue-rec:${{ steps.date.outputs.date }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/lpilogue-rec:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/lpilogue-rec:buildcache,mode=max
 
