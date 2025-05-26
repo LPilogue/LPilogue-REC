@@ -39,7 +39,7 @@ def cocktail_recommendation():
         if cocktail is None:
             return jsonify({"error": "No cocktail provided."}), 400
 
-        return jsonify(cocktail)
+        return jsonify(emotions[0], cocktail)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

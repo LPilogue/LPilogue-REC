@@ -42,4 +42,26 @@ jobs:
 
       # flask-app만 다시 실행
       - name: Run Docker compose
-        run: docker compose rm -f flask-app && docker compose up -d flask-app
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          FILE_SERVER_URL: ${{ secrets.FILE_SERVER_URL }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          ROOT_PASSWORD: ${{ secrets.ROOT_PASSWORD }}
+        run: |
+          echo "DB_USER=$DB_USER" >> .env
+          echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+          echo "DB_HOST=$DB_HOST" >> .env
+          echo "DB_NAME=$DB_NAME" >> .env
+          echo "FILE_SERVER_URL=FILE_SERVER_URL" >> .env
+          echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> .env
+          echo "SPOTIFY_CLIENT_ID=$SPOTIFY_CLIENT_ID" >> .env
+          echo "SPOTIFY_CLIENT_SECRET=$SPOTIFY_CLIENT_SECRET" >> .env
+          echo "YOUTUBE_API_KEY=$YOUTUBE_API_KEY" >> .env
+          echo "ROOT_PASSWORD=$ROOT_PASSWORD" >> .env
+          docker compose rm -f flask-app && docker compose up -d flask-app
