@@ -13,13 +13,14 @@ services:
     depends_on:
       - spring-boot-app
       - flask-app
+      - cloudflare-app
 
   spring-boot-app:
     container_name: lpilogue-be
     restart: on-failure
     image: hadoroke/lpilogue-be:latest
     ports:
-      - "52781:8080"
+      - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: "prod"
       SPRING_DATASOURCE_URL: jdbc:mysql://lpilogue-db:3306/lpilogue?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
@@ -61,7 +62,7 @@ services:
       SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
       YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
     ports:
-      - "59999:5000"
+      - "5000:5000"
     depends_on:
       - mysql-app
 
@@ -69,4 +70,4 @@ services:
     container_name: cloudflare
     restart: unless-stopped
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --token eyJhIjoiM2FhNmJmMjU1NzdmMDQ1OThhMjYyMGEwMzg4OWVkMzYiLCJ0IjoiM2EzNTk5MTItNmZhYi00OGM0LWIxMDktODRhOTFjMzVmN2MwIiwicyI6Ik9UVm1NV1l3TW1RdE9XWTNOQzAwWkdRd0xXRTJZalV0TldSaFpESTBZek01TjJGbSJ9
+    command: tunnel --no-autoupdate --protocol http2 run --token eyJhIjoiM2FhNmJmMjU1NzdmMDQ1OThhMjYyMGEwMzg4OWVkMzYiLCJ0IjoiM2EzNTk5MTItNmZhYi00OGM0LWIxMDktODRhOTFjMzVmN2MwIiwicyI6Ik9UVm1NV1l3TW1RdE9XWTNOQzAwWkdRd0xXRTJZalV0TldSaFpESTBZek01TjJGbSJ9
