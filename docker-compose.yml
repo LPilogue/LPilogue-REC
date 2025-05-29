@@ -71,3 +71,6 @@ services:
     restart: unless-stopped
     image: cloudflare/cloudflared:latest
     command: tunnel --no-autoupdate --protocol http2 run --token eyJhIjoiM2FhNmJmMjU1NzdmMDQ1OThhMjYyMGEwMzg4OWVkMzYiLCJ0IjoiM2EzNTk5MTItNmZhYi00OGM0LWIxMDktODRhOTFjMzVmN2MwIiwicyI6Ik9UVm1NV1l3TW1RdE9XWTNOQzAwWkdRd0xXRTJZalV0TldSaFpESTBZek01TjJGbSJ9
+networks:
+  lpilogue-network:
+    external: true
