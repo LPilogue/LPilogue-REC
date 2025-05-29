@@ -5,6 +5,8 @@ services:
     image: hadoroke/lpilogue-fe:latest
     ports:
       - "3000:3000"
+    networks:
+      - lpilogue-network
     environment:
       BE_HOST: "lpilogue-be"
       BE_PORT: "8080"
@@ -21,10 +23,11 @@ services:
     image: hadoroke/lpilogue-be:latest
     ports:
       - "8080:8080"
+    networks:
+      - lpilogue-network
     environment:
       SPRING_PROFILES_ACTIVE: "prod"
       SPRING_DATASOURCE_URL: jdbc:mysql://lpilogue-db:3306/lpilogue?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
-      #      SPRING_DATASOURCE_URL: jdbc:mysql://lpilogue-db.c5msg0qqmmcw.ap-northeast-2.rds.amazonaws.com:3306/lpilogue?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       TZ: Asia/Seoul
@@ -35,6 +38,8 @@ services:
     container_name: lpilogue-db
     image: mysql:8
     restart: always
+    networks:
+      - lpilogue-network
     environment:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
@@ -44,12 +49,14 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /mnt/tank/databases/mysql:/var/lib/mysql  # TrueNAS 디스크 마운트 경로
+      - /mnt/tank/databases/mysql:/var/lib/mysql
 
   flask-app:
     container_name: lpilogue-rec
     restart: on-failure
     image: hadoroke/lpilogue-rec:latest
+    networks:
+      - lpilogue-network
     environment:
       TZ: Asia/Seoul
       DB_USER: ${DB_USER}
@@ -70,7 +77,11 @@ services:
     container_name: cloudflare
     restart: unless-stopped
     image: cloudflare/cloudflared:latest
+    networks:
+      - lpilogue-network
     command: tunnel --no-autoupdate --protocol http2 run --token eyJhIjoiM2FhNmJmMjU1NzdmMDQ1OThhMjYyMGEwMzg4OWVkMzYiLCJ0IjoiM2EzNTk5MTItNmZhYi00OGM0LWIxMDktODRhOTFjMzVmN2MwIiwicyI6Ik9UVm1NV1l3TW1RdE9XWTNOQzAwWkdRd0xXRTJZalV0TldSaFpESTBZek01TjJGbSJ9
+
+# 외부 네트워크 설정
 networks:
   lpilogue-network:
     external: true
