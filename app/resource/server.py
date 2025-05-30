@@ -1,21 +1,27 @@
 import pymysql
+from dotenv import load_dotenv
+import os
 
-# 데이터베이스 연결 설정
+load_dotenv()  # .env 파일에서 환경 변수 불러오기
+
 DB_CONFIG = {
-    'host': '%',
-    'port': 3306,
-    'user': 'root',
-    'password': '2501',
-    'database': 'lpilogue'
+    'host': os.getenv("DB_HOST"),
+    'port': int(os.getenv("DB_PORT")),
+    'user': os.getenv("DB_USER"),
+    'password': os.getenv("DB_PASSWORD"),
+    'database': os.getenv("DB_NAME")
 }
 
 def get_db_connection(db_config):
     return pymysql.connect(
         host=db_config['host'],
+        port=db_config['port'],
         user=db_config['user'],
         password=db_config['password'],
-        database=db_config['database']
+        database=db_config['database'],
+        charset='utf8mb4'
     )
+
 
 # 파일 서버 URL
 file_server_url="https://lpilogue-cocktail.s3.us-east-2.amazonaws.com/"

@@ -1,11 +1,11 @@
 import pickle
-
 import pandas as pd
 import requests
 import spotipy
 from spotipy import SpotifyClientCredentials
 
 from app.resource.server import Client_id, Client_secret, youtube_api
+import os
 
 
 def recommend_songs(input_features, badSongList):
@@ -13,8 +13,11 @@ def recommend_songs(input_features, badSongList):
     Gets the top 5 recommendations using the KNN model.
     """
     try:
-        # Load the model and DataFrame information
-        loaded_data = pickle.load(open('../model_resource/knn_model_with_data.pkl', 'rb'))
+        # Load the model and DataFrame information (use absolute path)
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(base_dir, '../../model_resource/knn_model_with_data.pkl')
+        loaded_data = pickle.load(open(model_path, 'rb'))
+
         loaded_model = loaded_data['model']
         columns = loaded_data['dataframe_columns']
         data = loaded_data['dataframe_data']
@@ -28,14 +31,14 @@ def recommend_songs(input_features, badSongList):
         # Get the recommendations
         distances, indices = loaded_model.kneighbors([input_features])
 
-        bad_song_set={(song['name'],song['artist']) for song in badSongList}
+        bad_song_set = {(song['name'], song['artist']) for song in badSongList}
         recommendations = []
         for i in indices[0]:
-            if len(recommendations)==5:
+            if len(recommendations) == 5:
                 break
-            title=loaded_df.iloc[i]['title']
-            artist=loaded_df.iloc[i]['artist']
-            if (title,artist) in bad_song_set:
+            title = loaded_df.iloc[i]['title']
+            artist = loaded_df.iloc[i]['artist']
+            if (title, artist) in bad_song_set:
                 continue
             song = search_song(title, artist)
             recommendations.append(song)
@@ -44,14 +47,12 @@ def recommend_songs(input_features, badSongList):
         print("Error: knn_model_with_data.pkl not found. Please run the KNN training code first.")
         return []
 
-
 def search_song(song_title, artist_name):
     # Set up Spotipy client
     client_credentials_manager = SpotifyClientCredentials(client_id=Client_id, client_secret=Client_secret)
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
     query = f"track:{song_title} artist:{artist_name}"
     results = sp.search(q=query, type="track", limit=1)
-
 
     if results['tracks']['items']:
         track = results['tracks']['items'][0]
@@ -66,13 +67,18 @@ def search_song(song_title, artist_name):
         }
         return song_info
     else:
-        return "Song not found."
-
+        return {
+            "name": song_title,
+            "artist": artist_name,
+            "filePath": "",
+            "songURI": "",
+            "type": "RECOMMENDED",
+            "isLiked": 0
+        }
 
 def get_youtube_url(song_title, artist_name):
-        request_url=f"https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q={song_title}+{artist_name}&key={youtube_api}"
-        response=requests.get(request_url)
-        response_json=response.json()
-        video_id=response_json['items'][0]['id']['videoId']
-        return f"https://www.youtube.com/watch?v={video_id}"
-
+    request_url = f"https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q={song_title}+{artist_name}&key={youtube_api}"
+    response = requests.get(request_url)
+    response_json = response.json()
+    video_id = response_json['items'][0]['id']['videoId']
+    return f"https://www.youtube.com/watch?v={video_id}"
