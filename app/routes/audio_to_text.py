@@ -14,7 +14,7 @@ audio_bp=Blueprint("audio", __name__)
 # Whisper 모델 로드
 whisperPipe = pipeline(
     "automatic-speech-recognition",
-    model="openai/whisper-medium",  # Medium 모델 사용 (정확도 높음)
+    model="openai/whisper-tiny",  # tiny로 변경 (용량 문제)
     chunk_length_s=30,             # 30초 단위로 처리
     device="cpu"                   
 )

@@ -1,11 +1,15 @@
 import pickle
+import numpy as np
 import pandas as pd
 import requests
 import spotipy
+from scipy.spatial.distance import cosine
+from sklearn.feature_extraction.text import TfidfVectorizer
 from spotipy import SpotifyClientCredentials
 
 from app.resource.server import Client_id, Client_secret, youtube_api
 import os
+
 
 
 def recommend_songs(input_features, badSongList):
@@ -13,11 +17,8 @@ def recommend_songs(input_features, badSongList):
     Gets the top 5 recommendations using the KNN model.
     """
     try:
-        # Load the model and DataFrame information (use absolute path)
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        model_path = os.path.join(base_dir, '../../model_resource/knn_model_with_data.pkl')
-        loaded_data = pickle.load(open(model_path, 'rb'))
-
+        # Load the model and DataFrame information
+        loaded_data = pickle.load(open('model_resource/knn_model_with_data.pkl', 'rb'))
         loaded_model = loaded_data['model']
         columns = loaded_data['dataframe_columns']
         data = loaded_data['dataframe_data']
@@ -36,16 +37,28 @@ def recommend_songs(input_features, badSongList):
         for i in indices[0]:
             if len(recommendations) == 5:
                 break
-            title = loaded_df.iloc[i]['title']
-            artist = loaded_df.iloc[i]['artist']
+            title = loaded_df.iloc[i]['track_name']
+            artist = loaded_df.iloc[i]['track_artist']
             if (title, artist) in bad_song_set:
                 continue
             song = search_song(title, artist)
             recommendations.append(song)
+
+        mean_similarity = calculate_mean_similarity(input_features, indices[0], loaded_df)
+
         return recommendations
     except FileNotFoundError:
         print("Error: knn_model_with_data.pkl not found. Please run the KNN training code first.")
         return []
+
+
+def calculate_mean_similarity(input_features, indices, df):
+    similarities = []
+    for i in indices:
+        recommended_features = df.iloc[i].drop(['track_name', 'track_artist', 'lyrics']).values
+        similarity = 1 - cosine(input_features, recommended_features)
+        similarities.append(similarity)
+    return np.mean(similarities)
 
 def search_song(song_title, artist_name):
     # Set up Spotipy client
@@ -61,7 +74,7 @@ def search_song(song_title, artist_name):
             "name": track["name"],
             "type": "RECOMMENDED",
             "isLiked": 0,
-            "filePath": track["album"]["images"][0]["url"],
+            "imagePath": track["album"]["images"][0]["url"],
             "artist": ", ".join(artist["name"] for artist in track["artists"]),
             "songURI": get_youtube_url(song_title, artist_name)
         }
@@ -77,7 +90,10 @@ def search_song(song_title, artist_name):
         }
 
 def get_youtube_url(song_title, artist_name):
-    request_url = f"https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q={song_title}+{artist_name}&key={youtube_api}"
+    request_url = (
+        f"https://www.googleapis.com/youtube/v3/search?"
+        f"part=snippet&maxResults=1&q={song_title}+{artist_name}&key={youtube_api}"
+    )
     response = requests.get(request_url)
     response_json = response.json()
     video_id = response_json['items'][0]['id']['videoId']

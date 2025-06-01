@@ -32,13 +32,19 @@ def recommend_cocktail(emotions):
     emotion_g=round(emotion_g/total_weight)
     emotion_b=round(emotion_b/total_weight)
 
+    print("emotion_r: ", emotion_r, "emotion_g: ", emotion_g, "emotion_b: ", emotion_b)
 
     # DB 연결
     db_config=DB_CONFIG
     connection=get_db_connection(db_config)
+
+    # DB 연결 확인
+    if connection is None:
+        print("DB 연결 실패")
+
     with connection.cursor() as cursor:
         # 각 칵테일의 색상 가져오기
-        cursor.execute("SELECT color, cocktailDataId FROM CocktailData")
+        cursor.execute("SELECT color, id FROM Cocktail")
         colors = cursor.fetchall()
         min_distance=1000000000
         for color in colors:
@@ -53,12 +59,12 @@ def recommend_cocktail(emotions):
                 cocktail_id=color[1]
 
         # 추천 칵테일 정보 가져오기
-        cursor.execute("SELECT name, filePath, ingredients, description FROM CocktailData WHERE cocktailDataId=%s", (cocktail_id,))
+        cursor.execute("SELECT name, imagePath, ingredients, description FROM Cocktail WHERE id=%s", (cocktail_id,))
         cocktail = cursor.fetchone()
 
         cocktail_info={
             "name": cocktail[0],
-            "filePath": cocktail[1],
+            "imagePath": cocktail[1],
             "description": cocktail[3]
         }
         return cocktail_info

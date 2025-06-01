@@ -19,8 +19,10 @@ def predict_emotions(sentence):
     probabilities = torch.softmax(outputs.logits, dim=1).squeeze(0).detach().numpy()
 
     # 상위 3개의 인덱스 가져오기
-    top_3_indices = np.argsort(probabilities)[::-1][:3]
 
+    top_3_indices = np.argsort(probabilities)[::-1][:3]
+    # 전체 인덱스의 클래스 이름 출력
+    print("전체 인덱스의 클래스 이름:", label_encoder.classes_)
     # 인덱스를 클래스 이름으로 변환
     top_3_classes = label_encoder.inverse_transform(top_3_indices)
 

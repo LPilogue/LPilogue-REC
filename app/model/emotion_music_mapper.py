@@ -1,3 +1,5 @@
+import pickle
+
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
@@ -6,8 +8,13 @@ from scipy.spatial.distance import cosine
 
 class EmotionMusicMapper:
     def __init__(self):
-        # SBERT 모델 로드 (다국어 지원 모델)
-        self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+
+        # 더 가벼운 모델로 변경
+        self.model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2', device='cpu')
+
+        # 먼저 임베딩 차원을 확인
+        test_embedding = self.model.encode("테스트")
+        self.embedding_dim = len(test_embedding)  # 실제 임베딩 차원으로 설정
 
         # 음악 특성에 대한 설명적 단어들 정의
         self.feature_descriptions = {
@@ -24,24 +31,26 @@ class EmotionMusicMapper:
 
         # 각 특성의 범위
         self.feature_ranges = {
-            'popularity': (35, 100),
-            'danceability': (0, 100),
-            'energy': (0, 100),
-            'loudness': (-21, 0),
-            'speechiness': (0, 55),
-            'acousticness': (0, 100),
-            'liveness': (0, 100),
-            'valence': (0, 100),
-            'tempo': (60, 211)
+            'popularity': (0, 100),
+            'danceability': (0, 1),
+            'energy': (0, 1),
+            'loudness': (-21, 1.3),
+            'speechiness': (0, 1),
+            'acousticness': (0, 1),
+            'liveness': (0, 1),
+            'valence': (0, 1),
+            'tempo': (37, 215)
         }
 
+
+
     def get_embeddings(self, words):
-        """단어 리스트의 임베딩 평균을 반환"""
+        """노래 features의 임베딩을 반환"""
         embeddings = self.model.encode(words)
         return np.mean(embeddings, axis=0)
 
-    def calculate_feature_similarity(self, emotion_embedding, feature_words):
-        """감정과 특성 설명 단어들 간의 유사도 계산"""
+    def calculate_feature_similarity(self, emotion_embedding, feature_words, ):
+        """감정과 노래 features들 간의 유사도 계산"""
         feature_embedding = self.get_embeddings(feature_words)
         return 1 - cosine(emotion_embedding, feature_embedding)
 
@@ -49,7 +58,8 @@ class EmotionMusicMapper:
         result = {}
 
         # 전체 감정의 임베딩 계산
-        weighted_emotion_embedding = np.zeros(384)  # SBERT 임베딩 차원
+        weighted_emotion_embedding = np.zeros(self.embedding_dim)
+
         for emotion, weight in emotion_data:
             emotion_embedding = self.model.encode(emotion)
             weighted_emotion_embedding += emotion_embedding * weight
@@ -68,7 +78,9 @@ class EmotionMusicMapper:
 
             # 유사도를 해당 특성의 범위로 스케일링
             scaled_value = (similarity * (max_val - min_val)) + min_val
-            result[feature] = float(np.clip(scaled_value, min_val, max_val))
+            result[feature]=float(np.clip(scaled_value, min_val, max_val))
 
         return result
+
+
 
