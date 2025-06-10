@@ -1,7 +1,7 @@
 joblib~=1.4.2
 transformers~=4.46.3
-numpy>=1.24.0  # Python 3.12 호환
-pandas~=2.0.0  # 2.2.3도 매우 최신 버전입니다
+numpy==1.24.4
+pandas==2.0.3
 scikit-learn~=1.5.2
 sentence-transformers~=3.3.1
 scipy~=1.13.1  # 1.14.1은 아직 안정 버전이 아닙니다
