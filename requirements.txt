@@ -6,6 +6,7 @@ scikit-learn~=1.5.2
 sentence-transformers~=3.3.1
 scipy~=1.13.1  # 1.14.1은 아직 안정 버전이 아닙니다
 Flask~=3.1.0
+Flask-CORS~=5.0.0
 flasgger~=0.9.7
 sounddevice~=0.5.1
 ffmpeg~=1.4
