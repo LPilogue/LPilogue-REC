@@ -28,7 +28,7 @@ swagger_template = {
         "description": "감정 및 날씨 기반 음악 추천 API",
         "version": "1.0.0"
     }
-    "basePath": "/api/rec"
+    
 }
 
 swagger = Swagger(app, config=swagger_config, template=swagger_template)
