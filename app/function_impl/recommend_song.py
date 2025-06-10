@@ -1,5 +1,4 @@
 import pickle
-
 import numpy as np
 import pandas as pd
 import requests
@@ -9,6 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from spotipy import SpotifyClientCredentials
 
 from app.resource.server import Client_id, Client_secret, youtube_api
+import os
 
 
 
@@ -26,22 +26,20 @@ def recommend_songs(input_features, badSongList):
         # Recreate the DataFrame from the stored information
         loaded_df = pd.DataFrame(data, columns=columns)
 
-
         # input_features에서 value만 추출
         input_features = [value for _, value in input_features.items()]
 
         # Get the recommendations
         distances, indices = loaded_model.kneighbors([input_features])
 
-
-        bad_song_set={(song['name'],song['artist']) for song in badSongList}
+        bad_song_set = {(song['name'], song['artist']) for song in badSongList}
         recommendations = []
         for i in indices[0]:
-            if len(recommendations)==5:
+            if len(recommendations) == 5:
                 break
-            title=loaded_df.iloc[i]['track_name']
-            artist=loaded_df.iloc[i]['track_artist']
-            if (title,artist) in bad_song_set:
+            title = loaded_df.iloc[i]['track_name']
+            artist = loaded_df.iloc[i]['track_artist']
+            if (title, artist) in bad_song_set:
                 continue
             song = search_song(title, artist)
             recommendations.append(song)
@@ -52,6 +50,7 @@ def recommend_songs(input_features, badSongList):
     except FileNotFoundError:
         print("Error: knn_model_with_data.pkl not found. Please run the KNN training code first.")
         return []
+
 
 def calculate_mean_similarity(input_features, indices, df):
     similarities = []
@@ -68,7 +67,6 @@ def search_song(song_title, artist_name):
     query = f"track:{song_title} artist:{artist_name}"
     results = sp.search(q=query, type="track", limit=1)
 
-
     if results['tracks']['items']:
         track = results['tracks']['items'][0]
 
@@ -82,12 +80,21 @@ def search_song(song_title, artist_name):
         }
         return song_info
     else:
-        return "Song not found."
-
+        return {
+            "name": song_title,
+            "artist": artist_name,
+            "filePath": "",
+            "songURI": "",
+            "type": "RECOMMENDED",
+            "isLiked": 0
+        }
 
 def get_youtube_url(song_title, artist_name):
-        request_url=f"https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q={song_title}+{artist_name}&key={youtube_api}"
-        response=requests.get(request_url)
-        response_json=response.json()
-        video_id=response_json['items'][0]['id']['videoId']
-        return f"https://www.youtube.com/watch?v={video_id}"
+    request_url = (
+        f"https://www.googleapis.com/youtube/v3/search?"
+        f"part=snippet&maxResults=1&q={song_title}+{artist_name}&key={youtube_api}"
+    )
+    response = requests.get(request_url)
+    response_json = response.json()
+    video_id = response_json['items'][0]['id']['videoId']
+    return f"https://www.youtube.com/watch?v={video_id}"

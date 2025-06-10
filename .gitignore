@@ -1,0 +1,34 @@
+# 1) .cache 파일 무시
+.cache
+
+# 2) Python 바이트코드 캐시 무시
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 3) 가상환경 폴더 무시 (venv, .venv 등)
+venv/
+.venv/
+env/
+ENV/
+
+# 4) IDE/Editor별 설정 파일 무시
+#    IntelliJ/IDEA (JetBrains 계열)
+.idea/
+*.iml
+
+#    VSCode
+.vscode/
+
+# 5) macOS 메타데이터, DS_Store
+.DS_Store
+
+# 6) pickle 등 모델/학습용 아티팩트 파일
+label_encoder.pkl
+model_resource/modify_label_encoder.py
+
+# 7) 로그 파일이나 메타데이터 폴더(필요 시)
+*.log
+
+# 8) 환경변수 파일 (.env)
+.env

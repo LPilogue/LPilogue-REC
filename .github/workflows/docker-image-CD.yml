@@ -3,18 +3,15 @@ name: CD Pipeline
 on:
   workflow_run:
     # CI Pipeline이 실행된 후 실행
-    workflows: [ "CI Pipeline" ]
+    workflows: ["CI Pipeline"]
     types:
       - completed
 
-
 jobs:
   deploy:
-
     # 리눅스 서버의 Runner에서 실행
     runs-on: self-hosted
     steps:
-
       # 현재 레포지토리 가져오기
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -52,6 +49,7 @@ jobs:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
           ROOT_PASSWORD: ${{ secrets.ROOT_PASSWORD }}
         run: |
           echo "DB_USER=$DB_USER" >> .env
@@ -63,5 +61,6 @@ jobs:
           echo "SPOTIFY_CLIENT_ID=$SPOTIFY_CLIENT_ID" >> .env
           echo "SPOTIFY_CLIENT_SECRET=$SPOTIFY_CLIENT_SECRET" >> .env
           echo "YOUTUBE_API_KEY=$YOUTUBE_API_KEY" >> .env
+          echo "OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY" >> .env
           echo "ROOT_PASSWORD=$ROOT_PASSWORD" >> .env
           docker compose rm -f flask-app && docker compose up -d flask-app
