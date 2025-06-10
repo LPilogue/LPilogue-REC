@@ -18,7 +18,7 @@ swagger_config = {
     ],
     "static_url_path": "/flasgger_static",
     "swagger_ui": True,
-    "specs_route": "/api/rec/docs"
+    "specs_route": "/docs"
 }
 
 swagger_template = {
@@ -28,13 +28,14 @@ swagger_template = {
         "description": "감정 및 날씨 기반 음악 추천 API",
         "version": "1.0.0"
     }
+    "basePath": "/api/rec"
 }
 
 swagger = Swagger(app, config=swagger_config, template=swagger_template)
 
 # Blueprint 등록
-app.register_blueprint(recommend_bp, url_prefix="/api/rec")
-app.register_blueprint(chatbot_bp, url_prefix="/api/rec")
+app.register_blueprint(recommend_bp, url_prefix="/")
+app.register_blueprint(chatbot_bp, url_prefix="/")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
