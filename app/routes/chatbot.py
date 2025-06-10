@@ -17,11 +17,56 @@ generation_config = {
 }
 
 
-model = genai.GenerativeModel('gemini-pro',
+model = genai.GenerativeModel('gemini-1.5-flash',
                              generation_config=generation_config)
 
 @chatbot_bp.route('/chatbot', methods=['POST'])
 def chatbot_response():
+    """
+    일기 작성 후 AI 답변 API
+    ---
+    tags:
+      - 챗봇
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - content
+          properties:
+            content:
+              type: string
+              description: 일기 내용 (사용자가 작성한 텍스트)
+              example: '오늘 하루 정말 힘들었어. 일이 잘 안 풀려서 스트레스가 많이 쌓였어.'
+            song_name:
+              type: string
+              description: 추천된 노래 제목
+              example: 'Spring Day'
+            song_artist:
+              type: string
+              description: 추천된 노래 아티스트
+              example: 'BTS'
+            emotion:
+              type: string
+              description: 감정 분석 결과
+              example: 'sad'
+    responses:
+      200:
+        description: AI 답변 생성 성공
+        schema:
+          type: object
+          properties:
+            answer:
+              type: string
+              description: AI가 생성한 답변
+              example: '힘든 하루를 보냈구나. 이런 날엔 BTS의 Spring Day 어때? 따뜻하고 위로가 되는 멜로디가 마음을 달래줄 거야.'
+      400:
+        description: 잘못된 요청 (내용이 비어있음)
+      500:
+        description: 서버 오류
+    """
     # JSON 데이터에서 입력 받아오기
     data = request.get_json()
     content = data.get('content', '')

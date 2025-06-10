@@ -3,6 +3,7 @@ import os
 import logging
 from flask import jsonify, request, Blueprint
 
+
 from app.function_impl.insert_cocktailData import insert_cocktail
 from app.function_impl.predict_emotions import predict_emotions
 from app.function_impl.recommend_cocktail import recommend_cocktail
@@ -27,6 +28,8 @@ recommend_bp = Blueprint("recommend", __name__)
 mapper = EmotionMusicMapper()
 
 
+
+
 @recommend_bp.route("/", methods=["GET"])
 def hello():
     return "Server is running!"
@@ -34,6 +37,47 @@ def hello():
 
 @recommend_bp.route("/recommend", methods=["POST"])
 def recommend():
+    """
+    통합 추천 API
+    ---
+    tags:
+      - 추천
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - type
+          properties:
+            type:
+              type: string
+              description: 추천 타입
+              enum: ['emotion', 'weather']
+              example: 'emotion'
+            content:
+              type: string
+              description: 감정 분석할 텍스트 (emotion 타입일 때 필수)
+              example: '오늘 기분이 좋아요'
+            user_id:
+              type: string
+              description: 사용자 ID (weather 타입일 때 필수)
+              example: '123'
+            badSongList:
+              type: array
+              items:
+                type: string
+              description: 제외할 곡 목록
+              example: []
+    responses:
+      200:
+        description: 추천 성공
+      400:
+        description: 잘못된 요청
+      500:
+        description: 서버 오류
+    """
     data = request.get_json()
     if data is None:
         return jsonify({"error": "JSON 데이터가 제공되지 않았습니다."}), 400
@@ -183,17 +227,8 @@ def handle_weather_recommendation(data, bad_song_list):
 
         return jsonify({
             "type": "weather",
-            "city": city,
-            "weather": {
-                "main":     weather['main'],
-                "temp":     weather['temp'],
-                "wind":     weather['wind'],
-                "humidity": weather['humidity'],
-                "hour":     weather['hour']
-            },
-            "song_features": song_features,
-            "songs": songs,
-            "total_songs": len(songs) if songs else 0
+            "weather": weather['main'],
+            "song": songs[0] if songs and len(songs) > 0 else None
         })
 
     except Exception as e:
@@ -204,9 +239,34 @@ def handle_weather_recommendation(data, bad_song_list):
         }), 500
 
 
-@recommend_bp.route("/api/recommendations/cocktails", methods=["POST"])
+@recommend_bp.route("/recommendations/cocktails", methods=["POST"])
 def cocktail_recommendation():
-    """ 칵테일 단독 추천 """
+    """
+    칵테일 추천 API
+    ---
+    tags:
+      - 칵테일
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - content
+          properties:
+            content:
+              type: string
+              description: 감정 분석할 텍스트
+              example: '오늘 기분이 좋아요'
+    responses:
+      200:
+        description: 칵테일 추천 성공
+      400:
+        description: 잘못된 요청
+      500:
+        description: 서버 오류
+    """
     data = request.get_json()
     content = data['content']
     emotions = predict_emotions(content)
@@ -214,9 +274,41 @@ def cocktail_recommendation():
     return jsonify({"emotion": emotions[0], "cocktail": cocktail})
 
 
-@recommend_bp.route("/api/recommendations/songs", methods=["POST"])
+@recommend_bp.route("/recommendations/songs", methods=["POST"])
 def song_recommendation():
-    """ 노래 단독 추천 """
+    """
+    노래 추천 API (전체 목록)
+    ---
+    tags:
+      - 노래
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - content
+            - badSongList
+          properties:
+            content:
+              type: string
+              description: 감정 분석할 텍스트
+              example: '오늘 기분이 좋아요'
+            badSongList:
+              type: array
+              items:
+                type: string
+              description: 제외할 곡 목록
+              example: []
+    responses:
+      200:
+        description: 노래 추천 성공
+      400:
+        description: 잘못된 요청
+      500:
+        description: 서버 오류
+    """
     data = request.get_json()
     content = data['content']
     bad_song_list = data['badSongList']
@@ -224,3 +316,109 @@ def song_recommendation():
     song_features = mapper.process_emotion_data(emotions)
     songs = recommend_songs(song_features, bad_song_list)
     return jsonify(songs)
+
+
+@recommend_bp.route("/recommendations/songs/top5", methods=["POST"])
+def song_recommendation_top5():
+    """
+    추천곡 상위 5곡 API
+    ---
+    tags:
+      - 노래
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - content
+            - badSongList
+          properties:
+            content:
+              type: string
+              description: 감정 분석할 텍스트
+              example: '오늘 기분이 좋아요'
+            badSongList:
+              type: array
+              items:
+                type: string
+              description: 제외할 곡 목록
+              example: []
+    responses:
+      200:
+        description: 상위 5곡 추천 성공
+        schema:
+          type: object
+          properties:
+            songs:
+              type: array
+              items:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    example: 'Spring Day'
+                  artist:
+                    type: string
+                    example: 'BTS'
+                  similarity:
+                    type: number
+                    example: 0.95
+              description: 추천된 상위 5곡 목록
+            total_songs:
+              type: integer
+              example: 5
+              description: 반환된 곡 수
+            emotion:
+              type: string
+              example: 'happy'
+              description: 분석된 감정
+      400:
+        description: 잘못된 요청
+      500:
+        description: 서버 오류
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "요청 데이터가 없습니다."}), 400
+            
+        content = data.get('content')
+        bad_song_list = data.get('badSongList', [])
+        
+        if not content:
+            return jsonify({"error": "content가 필요합니다."}), 400
+            
+        # 감정 분석
+        emotions = predict_emotions(content)
+        if not emotions:
+            return jsonify({"error": "감정 분석에 실패했습니다."}), 500
+            
+        logger.info(f"감정 분석 결과: {emotions}")
+        
+        # 음악 특성 매핑
+        song_features = mapper.process_emotion_data(emotions)
+        if not song_features:
+            return jsonify({"error": "음악 특성 변환에 실패했습니다."}), 500
+            
+        # 노래 추천
+        songs = recommend_songs(song_features, bad_song_list)
+        if not songs:
+            return jsonify({"error": "추천할 노래가 없습니다."}), 404
+            
+        # 상위 5곡만 선택
+        top5_songs = songs[:5] if len(songs) >= 5 else songs
+        
+        return jsonify({
+            "songs": top5_songs,
+            "total_songs": len(top5_songs),
+            "emotion": emotions[0][0] if emotions and len(emotions) > 0 else "unknown"
+        })
+        
+    except Exception as e:
+        logger.error(f"노래 추천 처리 중 오류: {e}")
+        return jsonify({
+            "error": "노래 추천 처리 중 오류가 발생했습니다.",
+            "details": str(e)
+        }), 500

@@ -29,3 +29,6 @@ model_resource/modify_label_encoder.py
 
 # 7) 로그 파일이나 메타데이터 폴더(필요 시)
 *.log
+
+# 8) 환경변수 파일 (.env)
+.env
