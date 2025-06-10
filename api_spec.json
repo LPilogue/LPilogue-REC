@@ -1,0 +1,292 @@
+{
+  "definitions": {},
+  "info": {
+    "description": "\uac10\uc815 \ubc0f \ub0a0\uc528 \uae30\ubc18 \uc74c\uc545 \ucd94\ucc9c API",
+    "title": "LPilogue Recommendation API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/chatbot": {
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "content": {
+                  "description": "\uc77c\uae30 \ub0b4\uc6a9 (\uc0ac\uc6a9\uc790\uac00 \uc791\uc131\ud55c \ud14d\uc2a4\ud2b8)",
+                  "example": "\uc624\ub298 \ud558\ub8e8 \uc815\ub9d0 \ud798\ub4e4\uc5c8\uc5b4. \uc77c\uc774 \uc798 \uc548 \ud480\ub824\uc11c \uc2a4\ud2b8\ub808\uc2a4\uac00 \ub9ce\uc774 \uc313\uc600\uc5b4.",
+                  "type": "string"
+                },
+                "emotion": {
+                  "description": "\uac10\uc815 \ubd84\uc11d \uacb0\uacfc",
+                  "example": "sad",
+                  "type": "string"
+                },
+                "song_artist": {
+                  "description": "\ucd94\ucc9c\ub41c \ub178\ub798 \uc544\ud2f0\uc2a4\ud2b8",
+                  "example": "BTS",
+                  "type": "string"
+                },
+                "song_name": {
+                  "description": "\ucd94\ucc9c\ub41c \ub178\ub798 \uc81c\ubaa9",
+                  "example": "Spring Day",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "content"
+              ],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI \ub2f5\ubcc0 \uc0dd\uc131 \uc131\uacf5",
+            "schema": {
+              "properties": {
+                "answer": {
+                  "description": "AI\uac00 \uc0dd\uc131\ud55c \ub2f5\ubcc0",
+                  "example": "\ud798\ub4e0 \ud558\ub8e8\ub97c \ubcf4\ub0c8\uad6c\ub098. \uc774\ub7f0 \ub0a0\uc5d4 BTS\uc758 Spring Day \uc5b4\ub54c? \ub530\ub73b\ud558\uace0 \uc704\ub85c\uac00 \ub418\ub294 \uba5c\ub85c\ub514\uac00 \ub9c8\uc74c\uc744 \ub2ec\ub798\uc904 \uac70\uc57c.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "\uc798\ubabb\ub41c \uc694\uccad (\ub0b4\uc6a9\uc774 \ube44\uc5b4\uc788\uc74c)"
+          },
+          "500": {
+            "description": "\uc11c\ubc84 \uc624\ub958"
+          }
+        },
+        "summary": "\uc77c\uae30 \uc791\uc131 \ud6c4 AI \ub2f5\ubcc0 API",
+        "tags": [
+          "\ucc57\ubd07"
+        ]
+      }
+    },
+    "/recommend": {
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "badSongList": {
+                  "description": "\uc81c\uc678\ud560 \uace1 \ubaa9\ub85d",
+                  "example": [],
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "content": {
+                  "description": "\uac10\uc815 \ubd84\uc11d\ud560 \ud14d\uc2a4\ud2b8 (emotion \ud0c0\uc785\uc77c \ub54c \ud544\uc218)",
+                  "example": "\uc624\ub298 \uae30\ubd84\uc774 \uc88b\uc544\uc694",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "\ucd94\ucc9c \ud0c0\uc785",
+                  "enum": [
+                    "emotion",
+                    "weather"
+                  ],
+                  "example": "emotion",
+                  "type": "string"
+                },
+                "user_id": {
+                  "description": "\uc0ac\uc6a9\uc790 ID (weather \ud0c0\uc785\uc77c \ub54c \ud544\uc218)",
+                  "example": "123",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "\ucd94\ucc9c \uc131\uacf5"
+          },
+          "400": {
+            "description": "\uc798\ubabb\ub41c \uc694\uccad"
+          },
+          "500": {
+            "description": "\uc11c\ubc84 \uc624\ub958"
+          }
+        },
+        "summary": "\ud1b5\ud569 \ucd94\ucc9c API",
+        "tags": [
+          "\ucd94\ucc9c"
+        ]
+      }
+    },
+    "/recommendations/cocktails": {
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "content": {
+                  "description": "\uac10\uc815 \ubd84\uc11d\ud560 \ud14d\uc2a4\ud2b8",
+                  "example": "\uc624\ub298 \uae30\ubd84\uc774 \uc88b\uc544\uc694",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "content"
+              ],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "\uce75\ud14c\uc77c \ucd94\ucc9c \uc131\uacf5"
+          },
+          "400": {
+            "description": "\uc798\ubabb\ub41c \uc694\uccad"
+          },
+          "500": {
+            "description": "\uc11c\ubc84 \uc624\ub958"
+          }
+        },
+        "summary": "\uce75\ud14c\uc77c \ucd94\ucc9c API",
+        "tags": [
+          "\uce75\ud14c\uc77c"
+        ]
+      }
+    },
+    "/recommendations/songs": {
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "badSongList": {
+                  "description": "\uc81c\uc678\ud560 \uace1 \ubaa9\ub85d",
+                  "example": [],
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "content": {
+                  "description": "\uac10\uc815 \ubd84\uc11d\ud560 \ud14d\uc2a4\ud2b8",
+                  "example": "\uc624\ub298 \uae30\ubd84\uc774 \uc88b\uc544\uc694",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "content",
+                "badSongList"
+              ],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "\ub178\ub798 \ucd94\ucc9c \uc131\uacf5"
+          },
+          "400": {
+            "description": "\uc798\ubabb\ub41c \uc694\uccad"
+          },
+          "500": {
+            "description": "\uc11c\ubc84 \uc624\ub958"
+          }
+        },
+        "summary": "\ub178\ub798 \ucd94\ucc9c API (\uac10\uc815 \uae30\ubc18)",
+        "tags": [
+          "\ub178\ub798"
+        ]
+      }
+    },
+    "/recommendations/songs/weather": {
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "badSongList": {
+                  "description": "\uc81c\uc678\ud560 \uace1 \ubaa9\ub85d",
+                  "example": [],
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "user_id": {
+                  "description": "\uc0ac\uc6a9\uc790 ID",
+                  "example": "123",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "user_id",
+                "badSongList"
+              ],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "\ub0a0\uc528 \uae30\ubc18 \ub178\ub798 \ucd94\ucc9c \uc131\uacf5",
+            "schema": {
+              "properties": {
+                "songs": {
+                  "description": "\ucd94\ucc9c\ub41c \ub178\ub798 \ubaa9\ub85d",
+                  "type": "array"
+                },
+                "total_songs": {
+                  "description": "\ucd94\ucc9c\ub41c \ub178\ub798 \uc218",
+                  "type": "integer"
+                },
+                "weather": {
+                  "description": "\ud604\uc7ac \ub0a0\uc528",
+                  "example": "Rain",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "\uc798\ubabb\ub41c \uc694\uccad"
+          },
+          "404": {
+            "description": "\uc0ac\uc6a9\uc790 \uc815\ubcf4 \uc5c6\uc74c"
+          },
+          "500": {
+            "description": "\uc11c\ubc84 \uc624\ub958"
+          }
+        },
+        "summary": "\ub0a0\uc528 \uae30\ubc18 \ub178\ub798 \ucd94\ucc9c API",
+        "tags": [
+          "\ub178\ub798"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0"
+}
