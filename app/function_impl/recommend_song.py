@@ -13,6 +13,8 @@ import os
 
 
 def recommend_songs(input_features, badSongList):
+    if badSongList is None:
+        badSongList = []
     """
     Gets the top 5 recommendations using the KNN model.
     """
