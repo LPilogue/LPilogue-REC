@@ -28,6 +28,32 @@ WEATHER_CONFIG = {
 
 weather_api_key = os.getenv("OPENWEATHER_API_KEY")
 
+# 한글 도시명 → 영문 도시명 변환 딕셔너리
+KOR_TO_ENG_CITY = {
+    "서울": "Seoul",
+    "부산": "Busan",
+    "대구": "Daegu",
+    "인천": "Incheon",
+    "광주": "Gwangju",
+    "대전": "Daejeon",
+    "울산": "Ulsan",
+    "세종": "Sejong",
+    "경기": "Gyeonggi-do",
+    "강원": "Gangwon-do",
+    "충북": "Chungcheongbuk-do",
+    "충남": "Chungcheongnam-do",
+    "전북": "Jeollabuk-do",
+    "전남": "Jeollanam-do",
+    "경북": "Gyeongsangbuk-do",
+    "경남": "Gyeongsangnam-do",
+    "제주": "Jeju-do",
+    "성남": "Seongnam",
+    "수원": "Suwon",
+    "고양": "Goyang",
+    "용인": "Yongin",
+    # 필요시 추가 도시명...
+}
+
 # ✅ 1️⃣ 데이터베이스에서 회원 정보(city) 가져오기
 def get_user_city(user_id):
     """ 데이터베이스에서 사용자 city 정보 가져오기 """
@@ -55,7 +81,9 @@ def get_weather_data(city, api_key):
     if not city or not api_key:
         raise ValueError("city와 api_key는 필수입니다.")
     
-    url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=kr"
+    # 한글 도시명 → 영문 도시명 변환
+    city_eng = KOR_TO_ENG_CITY.get(city, city)
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={city_eng}&appid={api_key}&units=metric&lang=kr"
     
     try:
         response = requests.get(url, timeout=10)
