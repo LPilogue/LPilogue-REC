@@ -310,8 +310,10 @@ def song_recommendation():
         description: 서버 오류
     """
     data = request.get_json()
-    content = data['content']
-    bad_song_list = data['badSongList']
+    content = data.get('content')
+    bad_song_list = data.get('badSongList')
+    if bad_song_list is None:
+        bad_song_list = []
     emotions = predict_emotions(content)
     song_features = mapper.process_emotion_data(emotions)
     songs = recommend_songs(song_features, bad_song_list)
@@ -374,7 +376,9 @@ def weather_song_recommendation():
             return jsonify({"error": "요청 데이터가 없습니다."}), 400
             
         user_id = data.get("user_id")
-        bad_song_list = data.get("badSongList", [])
+        bad_song_list = data.get("badSongList")
+        if bad_song_list is None:
+            bad_song_list = []
         
         if not user_id:
             return jsonify({"error": "user_id가 필요합니다."}), 400
