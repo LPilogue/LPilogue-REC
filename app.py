@@ -3,7 +3,9 @@ from flasgger import Swagger
 from app.routes.recommend import recommend_bp
 from app.routes.chatbot import chatbot_bp
 
-app = Flask(__name__)
+
+
+app = Flask(__name__, static_url_path="/api/rec/flasgger_static")
 
 # Swagger 설정
 swagger_config = {
@@ -18,7 +20,7 @@ swagger_config = {
     ],
     "static_url_path": "/flasgger_static",
     "swagger_ui": True,
-    "specs_route": "/docs"
+    "specs_route": "/api/rec/docs"
 }
 
 swagger_template = {
@@ -34,8 +36,8 @@ swagger_template = {
 swagger = Swagger(app, config=swagger_config, template=swagger_template)
 
 # Blueprint 등록
-app.register_blueprint(recommend_bp, url_prefix="/")
-app.register_blueprint(chatbot_bp, url_prefix="/")
+app.register_blueprint(recommend_bp, url_prefix="/api/rec")
+app.register_blueprint(chatbot_bp, url_prefix="/api/rec")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
