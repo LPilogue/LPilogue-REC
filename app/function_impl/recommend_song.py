@@ -31,11 +31,31 @@ def recommend_songs(input_features, badSongList):
         # input_features에서 value만 추출
         input_features = [value for _, value in input_features.items()]
 
-        # Get the recommendations
+        # Get the recommendations (KNN 기반 4곡)
         distances, indices = loaded_model.kneighbors([input_features])
 
         bad_song_set = {(song['name'], song['artist']) for song in badSongList}
         recommendations = []
+        for i in indices[0]:
+            if len(recommendations) == 4:
+                break
+            title = loaded_df.iloc[i]['track_name']
+            artist = loaded_df.iloc[i]['track_artist']
+            if (title, artist) in bad_song_set:
+                continue
+            song = search_song(title, artist)
+            recommendations.append(song)
+
+        # 전체 DB에서 badSongList, 이미 추천된 곡을 제외하고 랜덤 1곡 추천
+        exclude_set = set((song['name'], song['artist']) for song in badSongList)
+        exclude_set.update((song['name'], song['artist']) for song in recommendations)
+        candidates = loaded_df[~loaded_df.apply(lambda row: (row['track_name'], row['track_artist']) in exclude_set, axis=1)]
+        if not candidates.empty:
+            random_row = candidates.sample(1).iloc[0]
+            random_song = search_song(random_row['track_name'], random_row['track_artist'])
+            recommendations.append(random_song)
+
+        # 만약 추천 곡이 5곡이 안 되면, 기존 방식으로 채움
         for i in indices[0]:
             if len(recommendations) == 5:
                 break
@@ -44,7 +64,8 @@ def recommend_songs(input_features, badSongList):
             if (title, artist) in bad_song_set:
                 continue
             song = search_song(title, artist)
-            recommendations.append(song)
+            if song not in recommendations:
+                recommendations.append(song)
 
         mean_similarity = calculate_mean_similarity(input_features, indices[0], loaded_df)
 
